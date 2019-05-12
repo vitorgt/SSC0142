@@ -1,5 +1,10 @@
 #REFERENCE
-#
+#https://en.wikibooks.org/wiki/Python_Programming/Threading
+#https://docs.python.org/2/tutorial/classes.html
+#https://docs.python.org/3/tutorial/modules.html
+#https://wiki.python.org.br/SocketBasico
+#https://www.geeksforgeeks.org/multithreading-in-python-set-2-synchronization/
+#https://docs.python.org/3/library/socket.html
 
 import socket
 import threading
