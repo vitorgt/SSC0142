@@ -22,12 +22,14 @@ threading.Thread(target=closeserver)
 PORT = 7777
 
 tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-tcp.bind((None, PORT))
-tcp.listen()#can be the number of sensors+actuators
+tcp.bind((None, PORT))#'None' to accept any connection
+tcp.listen()
+#listen's arg is the max connections
+#can be the number of sensors+actuators
 
 while True:
     conn, addr = tcp.accept()
-    threading.Thread(target=serverthread, args=(conn, addr,)).start()
+    serverthread(conn, adrr).start()
 
 #lock = threading.Lock()
 #lock.acquire()
