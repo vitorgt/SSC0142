@@ -1,5 +1,7 @@
 #!/usr/bin/python3
 
+import sys
+import atexit
 import socket
 import threading
 
@@ -8,6 +10,7 @@ class ServerThread(threading.Thread):
         self.conn = conn
         self.addr = addr
         print("New connection with", addr[0])
+        atexit.register(ServerThread.closeconn, self)
         threading.Thread.__init__(self)
 
     def readID(self):
@@ -17,6 +20,11 @@ class ServerThread(threading.Thread):
         print(str(data, 'utf-8'))
         #self.conn.sendall(b'ACK|ID')
         return str(data, 'utf-8')
+
+    def closeconn(self):
+        print("Closing connection with", self.addr[0])
+        self.conn.close()
+        sys.exit(0)
 
     def run(self):
         ID = ServerThread.readID(self)
@@ -34,8 +42,7 @@ class ServerThread(threading.Thread):
             wateH()
         elif ID == "co2i": # actuator co2 injector
             co2iH()
-        print("Closing connection with", self.addr[0])
-        self.conn.close()
+        ServerThread.closeconn(self)
 
 #seerver
 #   data = conn.recv(1024)

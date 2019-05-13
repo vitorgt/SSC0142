@@ -10,6 +10,7 @@
 #https://www.afternerd.com/blog/wp-content/uploads/2017/11/SMTP-sequence-diagram.png
 
 import sys
+import atexit
 import socket
 import threading
 import serverthread as st
@@ -19,8 +20,15 @@ def connectionslistener(server):
     while True:
         conn, addr = server.accept()
         st.ServerThread(conn, addr).start()
-        #yo = threading.Thread(target=st.ServerThread, args=(conn, addr,))
-        #yo.start()
+
+def closeserver(server):
+    try:
+        server.close()
+    except Exception as e:
+        print("Server could not be closed because of", e)
+        print("Closing application anyway")
+    else:
+        print("Server successfully closed")
 
 def main():
 
@@ -36,6 +44,7 @@ def main():
     server.listen()
     #listen's arg is the max connections
     #can be the number of sensors+actuators
+    atexit.register(closeserver, server) # when exiting application, close server
 
     cl = threading.Thread(target=connectionslistener, args=(server,))
     cl.daemon = True # to kill the thread when closing the program
@@ -44,16 +53,7 @@ def main():
     print("Type q to quit at anytime")
     while True:
         if "q" in input():
-            try:
-                server.close()
-            except Exception as e:
-                print("Server could not be closed because of", e)
-                print("Closing application anyway")
-            else:
-                print("Server successfully closed")
-            finally:
-                sys.exit()
-
+            sys.exit()
 
 if __name__ == "__main__":
     main()
