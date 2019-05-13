@@ -7,7 +7,7 @@ class temp: # sensor temperature
         if "-ip" in sys.argv[x]:
             HOST = sys.argv[x+1]
     if HOST is None:
-        HOST = input()
+        HOST = input("Type Host's IP")
 
     client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     try:
