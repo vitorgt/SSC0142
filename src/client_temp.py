@@ -2,9 +2,12 @@ import sys
 import socket
 
 class temp: # sensor temperature
+    HOST = None
     for x in range(len(sys.argv)):
         if "-ip" in sys.argv[x]:
             HOST = sys.argv[x+1]
+    if HOST is None:
+        HOST = input()
 
     client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     try:
