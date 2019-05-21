@@ -13,50 +13,65 @@ import sys
 import atexit
 import socket
 import threading
-import serverthread as st
+import serverthread
 
 
-def connectionslistener(server):
-    while True:
-        conn, addr = server.accept()
-        st.ServerThread(conn, addr).start()
+def threaded(fn):
+    def wrapper(*args, **kwargs):
+        thread = threading.Thread(target=fn, args=args, kwargs=kwargs)
+        thread.daemon = True  # to kill the thread when closing the program
+        thread.start()
+    return wrapper
 
-def closeserver(server):
-    try:
-        server.close()
-    except Exception as e:
-        print("Server could not be closed because of", e)
-        print("Closing application anyway")
-    else:
-        print("Server successfully closed")
 
-def main():
+class Server:
 
-    ##################### GETTING SERVER'S IP ######################
-    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    s.connect(("8.8.8.8", 80))
-    print("Server's IP:", s.getsockname()[0])
-    s.close()
-    ################################################################
+    @threaded
+    def connectionslistener(self):
+        while True:
+            conn, addr = self.server.accept()
+            serverthread.ServerThread(
+                manager=self, conn=conn, addr=addr).start()
 
-    server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    server.bind(('', 7777)) #'' to accept any connection
-    server.listen()
-    #listen's arg is the max connections
-    #can be the number of sensors+actuators
-    atexit.register(closeserver, server) # when exiting application, close server
+    def closeserver(self):
+        try:
+            self.server.close()
+        except Exception as e:
+            print("Server could not be closed because of", e)
+            print("Closing application anyway")
+        else:
+            print("Server successfully closed")
 
-    cl = threading.Thread(target=connectionslistener, args=(server,))
-    cl.daemon = True # to kill the thread when closing the program
-    cl.start()
+    def __init__(self):
 
-    print("Type q to quit at anytime")
-    while True:
-        if "q" in input():
-            sys.exit()
+        #arrays to store collected data
+        self.tempData = []
+        self.humiData = []
+        self.co2lData = []
+
+        self.v = False
+        for x in range(len(sys.argv)):
+            if "-v" in sys.argv[x]:
+                self.v = True
+
+        self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.server.bind(('', 7777))  # '' to accept any connection
+        self.server.listen()
+
+        # when exiting application, close server
+        atexit.register(Server.closeserver, self=self)
+
+        Server.connectionslistener(self)
+
+        if self.v:
+            print("Type \"quit\" to quit at anytime")
+        while True:
+            if "quit" in input():
+                sys.exit()
+
 
 if __name__ == "__main__":
-    main()
+    Server()
 
 #lock = threading.Lock()
 #lock.acquire()
