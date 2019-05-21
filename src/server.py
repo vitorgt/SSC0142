@@ -42,7 +42,6 @@ class Server:
         else:
             print("Server successfully closed")
 
-    @threaded
     def status(self):
         if self.temp.conn:
             print("Temperature: "+self.temp.data[-1]+"°C")

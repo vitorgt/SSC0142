@@ -11,12 +11,12 @@ def handler(skt, manager):
                 break
         if manager.v:
             print("temp handler received: " + str(data, "utf-8"))
-        instance = str(data, "utf-8").split("|")
-        if instance[1] == "TEMP":
-            if instance[3] == "C":
+        data = str(data, "utf-8").split("|")
+        if data[1] == "POST" and data[2] == "TEMP":
+            if data[4] == "C":
                 pass
-            elif instance[3] == "F":
-                instance[2] = (instance[2] - 32) * 5 / 9
-            elif instance[3] == "K":
-                instance[2] = instance[2] - 273.15
-            manager.temp.data.append(instance[2])
+            elif data[4] == "F":
+                data[3] = (data[3] - 32) * 5 / 9
+            elif data[4] == "K":
+                data[3] = data[3] - 273.15
+            manager.temp.data.append(data[3])

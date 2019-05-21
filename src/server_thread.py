@@ -1,5 +1,3 @@
-#!/usr/bin/python3
-
 import sys
 import atexit
 import socket
@@ -47,6 +45,7 @@ class ServerThread(threading.Thread):
             self.id.conn = self.addr
             import server_temp
             handler = server_temp.handler
+        '''
         elif ID == "HUMI":  # sensor humidity
             import server_humi
             handler = server_humi.handler
@@ -65,6 +64,7 @@ class ServerThread(threading.Thread):
         elif ID == "CO2I":  # actuator co2 injector
             import server_co2i
             handler = server_co2i.handler
+        '''
         handler(self, self.manager)
         ServerThread.closeconn(self)
 

@@ -37,10 +37,13 @@ class temp:  # sensor temperature
         print("temp received: " + str(data, "utf-8"))
     data = str(data, "utf-8").split("|")
     if data[1] == "ACK" and data[2] == "CONN" and data[3] == "TEMP":
-        i = 4
-        while i > 0:
-            i -= 1
-            time.sleep(2)
+        while True:
+            time.sleep(10)
             if v:
-                print("temp sending: |TEMP|40|C|")
-            client.send(bytes("|TEMP|40|C|", "utf-8"))
+                print("temp sending: |POST|TEMP|40|C|")
+            client.send(bytes("|POST|TEMP|40|C|", "utf-8"))
+    else:
+        if v:
+            print("Aborting.")
+            client.close()
+            sys.exit()
