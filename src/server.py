@@ -13,7 +13,7 @@ import sys
 import atexit
 import socket
 import threading
-import serverthread
+import server_thread
 
 
 def threaded(fn):
@@ -30,7 +30,7 @@ class Server:
     def connectionslistener(self):
         while True:
             conn, addr = self.server.accept()
-            serverthread.ServerThread(
+            server_thread.ServerThread(
                 manager=self, conn=conn, addr=addr).start()
 
     def closeserver(self):
