@@ -45,5 +45,5 @@ class temp:  # sensor temperature
     else:
         if v:
             print("Aborting.")
-            client.close()
-            sys.exit()
+        client.close()
+        sys.exit()
