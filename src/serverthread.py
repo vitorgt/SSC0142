@@ -5,8 +5,10 @@ import atexit
 import socket
 import threading
 
+
 class ServerThread(threading.Thread):
-    def __init__(self, conn, addr):
+    def __init__(self, manager, conn, addr):
+        self.manager = manager
         self.conn = conn
         self.addr = addr
         print("New connection with", addr[0])
@@ -16,10 +18,19 @@ class ServerThread(threading.Thread):
     def readID(self):
         while True:
             data = self.conn.recv(1024)
-            if data: break
-        print(str(data, 'utf-8'))
-        #self.conn.sendall(b'ACK|ID')
-        return str(data, 'utf-8')
+            if data:
+                break
+        if self.manager.v:
+            print("serverthread received: " + str(data, "utf-8"))
+        data = str(data, "utf-8").split("|")
+        if "CONN" == data[1]:
+            if self.manager.v:
+                print("serverthread sending: |ACK"+"|".join(data))
+            self.conn.send(bytes("|ACK"+"|".join(data), "utf-8"))
+            return data[2]
+        else:
+            print(data)
+            raise ConnectionRefusedError("unknown protocol received")
 
     def closeconn(self):
         print("Closing connection with", self.addr[0])
@@ -28,20 +39,29 @@ class ServerThread(threading.Thread):
 
     def run(self):
         ID = ServerThread.readID(self)
-        if   ID == "temp": # sensor temperature
-            tempH() # handler
-        elif ID == "humi": # sensor humidity
-            humiH()
-        elif ID == "co2l": # sensor co2 level
-            co2lH()
-        elif ID == "heat": # actuator heater
-            heatH()
-        elif ID == "cool": # actuator cooler
-            coolH()
-        elif ID == "wate": # actuator watering
-            wateH()
-        elif ID == "co2i": # actuator co2 injector
-            co2iH()
+        handler = None
+        if ID == "TEMP":  # sensor temperature
+            import temp
+            handler = temp.handler
+        elif ID == "HUMI":  # sensor humidity
+            import humi
+            handler = humi.handler
+        elif ID == "CO2L":  # sensor co2 level
+            import co2l
+            handler = co2l.handler
+        elif ID == "HEAT":  # actuator heater
+            import heat
+            handler = heat.handler
+        elif ID == "COOL":  # actuator cooler
+            import cool
+            handler = cool.handler
+        elif ID == "WATE":  # actuator watering
+            import wate
+            handler = wate.handler
+        elif ID == "CO2I":  # actuator co2 injector
+            import co2i
+            handler = co2i.handler
+        handler(self, self.manager)
         ServerThread.closeconn(self)
 
 #seerver
