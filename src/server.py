@@ -42,12 +42,38 @@ class Server:
         else:
             print("Server successfully closed")
 
+    @threaded
+    def status(self):
+        if self.temp.conn:
+            print("Temperature: "+self.temp.data[-1]+"°C")
+        if self.humi.conn:
+            print("Humidity: "+self.humi.data[-1]+"%")
+        if self.co2l.conn:
+            print("CO2 level: "+self.co2l.data[-1]+"ppm")
+        if self.heat.conn:
+            print("Heater "+("off", "on")[self.heat.on])
+        if self.cool.conn:
+            print("Cooler "+("off", "on")[self.cool.on])
+        if self.wate.conn:
+            print("Watering "+("off", "on")[self.wate.on])
+        if self.co2i.conn:
+            print("CO2 injector "+("off", "on")[self.co2i.on])
+
     def __init__(self):
 
-        #arrays to store collected data
-        self.tempData = []
-        self.humiData = []
-        self.co2lData = []
+        #Server's data
+        class Storage:
+            def __init__(self):
+                self.conn = False
+                self.on = False
+                self.data = []
+        self.temp = Storage()
+        self.humi = Storage()
+        self.co2l = Storage()
+        self.heat = Storage()
+        self.cool = Storage()
+        self.wate = Storage()
+        self.co2i = Storage()
 
         self.v = False
         for x in range(len(sys.argv)):
@@ -65,9 +91,12 @@ class Server:
 
         if self.v:
             print("Type \"quit\" to quit at anytime")
+            print("Type \"status\" to show sensors' instant mesurement")
         while True:
             if "quit" in input():
                 sys.exit()
+            if "status" in input():
+                self.status()
 
 
 if __name__ == "__main__":

@@ -11,6 +11,7 @@ class ServerThread(threading.Thread):
         self.manager = manager
         self.conn = conn
         self.addr = addr
+        self.id = None
         print("New connection with", addr[0])
         atexit.register(ServerThread.closeconn, self)
         threading.Thread.__init__(self)
@@ -34,6 +35,7 @@ class ServerThread(threading.Thread):
 
     def closeconn(self):
         print("Closing connection with", self.addr[0])
+        self.id.conn = False  # update manager's info
         self.conn.close()
         sys.exit(0)
 
@@ -41,6 +43,8 @@ class ServerThread(threading.Thread):
         ID = ServerThread.readID(self)
         handler = None
         if ID == "TEMP":  # sensor temperature
+            self.id = self.manager.temp  # link to manager's info
+            self.id.conn = self.addr
             import server_temp
             handler = server_temp.handler
         elif ID == "HUMI":  # sensor humidity
