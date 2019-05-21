@@ -41,26 +41,26 @@ class ServerThread(threading.Thread):
         ID = ServerThread.readID(self)
         handler = None
         if ID == "TEMP":  # sensor temperature
-            import temp
-            handler = temp.handler
+            import server_temp
+            handler = server_temp.handler
         elif ID == "HUMI":  # sensor humidity
-            import humi
-            handler = humi.handler
+            import server_humi
+            handler = server_humi.handler
         elif ID == "CO2L":  # sensor co2 level
-            import co2l
-            handler = co2l.handler
+            import server_co2l
+            handler = server_co2l.handler
         elif ID == "HEAT":  # actuator heater
-            import heat
-            handler = heat.handler
+            import server_heat
+            handler = server_heat.handler
         elif ID == "COOL":  # actuator cooler
-            import cool
-            handler = cool.handler
+            import server_cool
+            handler = server_cool.handler
         elif ID == "WATE":  # actuator watering
-            import wate
-            handler = wate.handler
+            import server_wate
+            handler = server_wate.handler
         elif ID == "CO2I":  # actuator co2 injector
-            import co2i
-            handler = co2i.handler
+            import server_co2i
+            handler = server_co2i.handler
         handler(self, self.manager)
         ServerThread.closeconn(self)
 
