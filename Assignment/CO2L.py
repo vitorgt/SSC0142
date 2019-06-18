@@ -22,8 +22,8 @@ def envi(client):
 if __name__ == "__main__":
     HOST, v = client.inputs()
     if HOST != None:
-        client.Client(7777, "TEMP", "MANA", mana, v, HOST).start()
-        client.Client(8888, "TEMP", "ENVI", envi, v, HOST).start()
+        client.Client(7777, "CO2L", "MANA", mana, v, HOST).start()
+        client.Client(8888, "CO2L", "ENVI", envi, v, HOST).start()
     else:
-        client.Client(7777, "TEMP", "MANA", mana, v).start()
-        client.Client(8888, "TEMP", "ENVI", envi, v).start()
+        client.Client(7777, "CO2L", "MANA", mana, v).start()
+        client.Client(8888, "CO2L", "ENVI", envi, v).start()

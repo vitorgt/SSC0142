@@ -18,9 +18,12 @@ def temp(st, serverData):
             serverData.append(data[3])
 
 
-
 def humi(st, serverData):
     print("hi humi from server")
+
+
+def co2L(st, serverData):
+    print("hi co2 level from server")
 
 
 tempData = []
@@ -43,7 +46,8 @@ storage = {
 
 functions = {
     "TEMP": temp,
-    "HUMI": humi
+    "HUMI": humi,
+    "CO2L": co2L
 }
 
 
