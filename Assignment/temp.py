@@ -3,7 +3,7 @@
 import time
 import client
 
-temp = 0
+temp = 40
 
 
 # Sends temperatures to Manager
