@@ -27,8 +27,8 @@ class temp:  # sensor temperature
             else:
                 break
     if v:
-        print("temp sending: |CONN|TEMP|")
-    client.send(bytes("|CONN|TEMP|", "utf-8"))
+        print("temp sending: |CON|TEMP|")
+    client.send(bytes("|CON|TEMP|", "utf-8"))
     while True:
         data = client.recv(1024)
         if data:
@@ -36,7 +36,7 @@ class temp:  # sensor temperature
     if v:
         print("temp received: " + str(data, "utf-8"))
     data = str(data, "utf-8").split("|")
-    if data[1] == "ACK" and data[2] == "CONN" and data[3] == "TEMP":
+    if data[1] == "ACK" and data[2] == "CON" and data[3] == "TEMP":
         while True:
             time.sleep(10)
             if v:
