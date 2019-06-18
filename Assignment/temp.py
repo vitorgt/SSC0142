@@ -11,8 +11,8 @@ def mana(client):
     while True:
         time.sleep(10)
         if client.v:
-            print(client.ID, "-> MANA: |PUT|"+client.ID+"|"+temp+"|")
-        client.sck.send(bytes("|PUT|"+client.ID+"|"+temp+"|", "utf-8"))
+            print(client.ID, "-> MANA: |PUT|"+client.ID+"|"+str(temp)+"|")
+        client.sck.send(bytes("|PUT|"+client.ID+"|"+str(temp)+"|", "utf-8"))
 
 
 # Receives temperature from Environment

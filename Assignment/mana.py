@@ -1,119 +1,27 @@
 #!/usr/bin/python3
 
 import server
-
-
-def temp(st, serverData):
-    if st.server.v:
-        print(st.ID+" activated")
-    while True:
-        while True:
-            data = st.conn.recv(1024)
-            if data:
-                break
-        if st.server.v:
-            print(st.server.ID+" <- "+st.ID+": "+str(data, "utf-8"))
-        data = str(data, "utf-8").split("|")
-        if data[1] == "PUT" and data[2] == st.ID:
-            serverData.append(float(data[3]))
-
-
-def humi(st, serverData):
-    if st.server.v:
-        print(st.ID+" activated")
-    while True:
-        while True:
-            data = st.conn.recv(1024)
-            if data:
-                break
-        if st.server.v:
-            print(st.server.ID+" <- "+st.ID+": "+str(data, "utf-8"))
-        data = str(data, "utf-8").split("|")
-        if data[1] == "PUT" and data[2] == st.ID:
-            serverData.append(float(data[3]))
-
-
-def co2L(st, serverData):
-    if st.server.v:
-        print(st.ID+" activated")
-    while True:
-        while True:
-            data = st.conn.recv(1024)
-            if data:
-                break
-        if st.server.v:
-            print(st.server.ID+" <- "+st.ID+": "+str(data, "utf-8"))
-        data = str(data, "utf-8").split("|")
-        if data[1] == "PUT" and data[2] == st.ID:
-            serverData.append(float(data[3]))
-
-
-def heat(st, serverData):
-    while True:
-        if len(tempData) != 0 and tempData[-1] < min_temp and not serverData:
-            serverData = True
-            if st.server.v:
-                print(st.server.ID+" -> "+st.ID+": "+"|PUT|HEAT|ON|")
-            st.conn.send(bytes("|PUT|HEAT|ON|", "utf-8"))
-        if len(tempData) != 0 and tempData[-1] > min_temp and serverData:
-            serverData = False
-            if st.server.v:
-                print(st.server.ID+" -> "+st.ID+": "+"|PUT|HEAT|OFF|")
-            st.conn.send(bytes("|PUT|HEAT|OFF|", "utf-8"))
-
-
-def co2I(st, serverData):
-    while True:
-        if len(co2lData) != 0 and co2lData[-1] < min_co2l and not serverData:
-            serverData = True
-            if st.server.v:
-                print(st.server.ID+" -> "+st.ID+": "+"|PUT|CO2I|ON|")
-            st.conn.send(bytes("|PUT|CO2I|ON|", "utf-8"))
-        if len(co2lData) != 0 and co2lData[-1] > min_co2l and serverData:
-            serverData = False
-            if st.server.v:
-                print(st.server.ID+" -> "+st.ID+": "+"|PUT|CO2I|OFF|")
-            st.conn.send(bytes("|PUT|CO2I|OFF|", "utf-8"))
-
-
-def cool(st, serverData):
-    while True:
-        if len(tempData) != 0 and tempData[-1] > max_temp and not serverData:
-            serverData = True
-            if st.server.v:
-                print(st.server.ID+" -> "+st.ID+": "+"|PUT|COOL|ON|")
-            st.conn.send(bytes("|PUT|COOL|ON|", "utf-8"))
-        if len(tempData) != 0 and tempData[-1] < max_temp and serverData:
-            serverData = False
-            if st.server.v:
-                print(st.server.ID+" -> "+st.ID+": "+"|PUT|COOL|OFF|")
-            st.conn.send(bytes("|PUT|COOL|OFF|", "utf-8"))
-
-def wate(st, serverData):
-    while True:
-        if len(humiData) != 0 and humiData[-1] < min_wate and not serverData:
-            serverData = True
-            if st.server.v:
-                print(st.server.ID+" -> "+st.ID+": "+"|PUT|WATE|ON|")
-            st.conn.send(bytes("|PUT|WATE|ON|", "utf-8"))
-        if len(humiData) != 0 and humiData[-1] > min_wate and serverData:
-            serverData = False
-            if st.server.v:
-                print(st.server.ID+" -> "+st.ID+": "+"|PUT|WATE|OFF|")
-            st.conn.send(bytes("|PUT|WATE|OFF|", "utf-8"))
+import operator
 
 
 tempData = []
 humiData = []
 co2lData = []
-heatData = False
-coolData = False
-wateData = False
-co2iData = False
-max_temp = 32
-min_temp = 15
-min_co2l = 6
-min_wate = 0.9
+heatData = [False]
+coolData = [False]
+wateData = [False]
+co2iData = [False]
+max_temp = [32]
+min_temp = [15]
+min_co2l = [6]
+min_wate = [0.9]
+
+actuators = {
+    "HEAT": [tempData, operator.lt, min_temp, heatData, operator.gt],
+    "COOL": [tempData, operator.gt, max_temp, coolData, operator.lt],
+    "WATE": [humiData, operator.lt, min_wate, wateData, operator.gt],
+    "CO2I": [co2lData, operator.lt, min_co2l, co2iData, operator.gt]
+}
 
 storage = {
     "TEMP": tempData,
@@ -125,19 +33,45 @@ storage = {
     "CO2I": co2iData
 }
 
-functions = {
-    "TEMP": temp,
-    "HUMI": humi,
-    "CO2L": co2L,
-    "HEAT": heat,
-    "CO2I": co2I,
-    "COOL": cool,
-    "WATE": wate
-}
+
+def sensor(sck):
+    if sck.server.v:
+        print(sck.ID+" logged in")
+    while True:
+        while True:
+            data = sck.conn.recv(1024)
+            if data:
+                break
+        if sck.server.v:
+            print(sck.server.ID+" <- "+sck.ID+": "+str(data, "utf-8"))
+        data = str(data, "utf-8").split("|")
+        if data[1] == "PUT" and data[2] == sck.ID:
+            storage[sck.ID].append(float(data[3]))
+
+
+def actuator(sck, infos):
+    if sck.server.v:
+        print(sck.ID+" logged in")
+    while True:
+        if len(infos[0]) != 0 and infos[1](infos[0][-1], infos[2]) and not infos[3]:
+            infos[3][0] = True
+            string = "|PUT|"+sck.ID+"|ON|"
+            if sck.server.v:
+                print(sck.server.ID+" -> "+sck.ID+": "+string)
+            sck.conn.send(bytes(string, "utf-8"))
+        if len(infos[0]) != 0 and infos[4](infos[0][-1], infos[2]) and infos[3]:
+            infos[3][0] = False
+            string = "|PUT|"+sck.ID+"|OFF|"
+            if sck.server.v:
+                print(sck.server.ID+" -> "+sck.ID+": "+string)
+            sck.conn.send(bytes(string, "utf-8"))
 
 
 def mana(serverThread):
-    functions[serverThread.ID](serverThread, storage[serverThread.ID])
+    if serverThread.ID in actuators:
+        actuator(serverThread, actuators[serverThread.ID])
+    else:
+        sensor(serverThread)
 
 
 if __name__ == "__main__":
