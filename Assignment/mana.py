@@ -18,23 +18,9 @@ def temp(st, serverData):
             serverData.append(data[3])
 
 
+
 def humi(st, serverData):
-    if st.server.v:
-        print(st.ID+" activated")
-    while True:
-        while True:
-            data = st.conn.recv(1024)
-            if data:
-                break
-        if st.server.v:
-            print(st.server.ID+" <- "+st.ID+": "+str(data, "utf-8"))
-        data = str(data, "utf-8").split("|")
-        if data[1] == "PUT" and data[2] == st.ID:
-            serverData.append(data[3])
-
-
-def co2L(st, serverData):
-    print("hi co2 level from server")
+    print("hi humi from server")
 
 
 tempData = []
@@ -57,8 +43,7 @@ storage = {
 
 functions = {
     "TEMP": temp,
-    "HUMI": humi,
-    "CO2L": co2L
+    "HUMI": humi
 }
 
 
