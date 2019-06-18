@@ -19,7 +19,18 @@ def temp(st, serverData):
 
 
 def humi(st, serverData):
-    print("hi humi from server")
+    if st.server.v:
+        print(st.ID+" activated")
+    while True:
+        while True:
+            data = st.conn.recv(1024)
+            if data:
+                break
+        if st.server.v:
+            print(st.server.ID+" <- "+st.ID+": "+str(data, "utf-8"))
+        data = str(data, "utf-8").split("|")
+        if data[1] == "PUT" and data[2] == st.ID:
+            serverData.append(data[3])
 
 
 def co2L(st, serverData):
