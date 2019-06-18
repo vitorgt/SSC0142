@@ -9,7 +9,7 @@ def mana(client):
     while True:
         time.sleep(10)
         if client.v:
-            print(client.ID, "sending to MANA:  |PUT|"+client.ID+"|40|")
+            print(client.ID, "-> MANA: |PUT|"+client.ID+"|40|")
         client.sck.send(bytes("|PUT|"+client.ID+"|40|", "utf-8"))
 
 

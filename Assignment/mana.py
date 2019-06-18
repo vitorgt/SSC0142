@@ -12,7 +12,7 @@ def temp(st, serverData):
             if data:
                 break
         if st.server.v:
-            print(st.server.ID+" received from "+st.ID+": "+str(data, "utf-8"))
+            print(st.server.ID+" <- "+st.ID+": "+str(data, "utf-8"))
         data = str(data, "utf-8").split("|")
         if data[1] == "PUT" and data[2] == st.ID:
             serverData.append(data[3])
@@ -26,10 +26,10 @@ def humi(st, serverData):
 tempData = []
 humiData = []
 co2lData = []
-heatData = []
-coolData = []
-wateData = []
-co2iData = []
+heatData = False
+coolData = False
+wateData = False
+co2iData = False
 
 storage = {
     "TEMP": tempData,

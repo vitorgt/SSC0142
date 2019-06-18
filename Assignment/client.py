@@ -48,7 +48,7 @@ class Client(threading.Thread):
 
         # Identification
         if self.v:
-            print(self.ID+" sending to "+self.target+":  |CON|"+self.ID+"|")
+            print(self.ID+" -> "+self.target+":  |CON|"+self.ID+"|")
         self.sck.send(bytes("|CON|"+self.ID+"|", "utf-8"))
 
         # Reading identification acknowledge
@@ -57,7 +57,7 @@ class Client(threading.Thread):
             if data:
                 break
         if self.v:
-            print(self.ID+" received from "+self.target+":", str(data, "utf-8"))
+            print(self.ID+" <- "+self.target+":", str(data, "utf-8"))
         data = str(data, "utf-8").split("|")
         if data[1] == "ACK" and data[2] == "CON" and data[3] == self.ID:
             # Running client specific function
