@@ -1,0 +1,10 @@
+run:
+	xfce4-terminal -e "python3 Assignment/mana.py -v"
+	xfce4-terminal -e "python3 Assignment/envi.py -v"
+	xfce4-terminal -e "python3 Assignment/temp.py -v"
+	xfce4-terminal -e "python3 Assignment/humi.py -v"
+	xfce4-terminal -e "python3 Assignment/co2l.py -v"
+	xfce4-terminal -e "python3 Assignment/heat.py -v"
+	xfce4-terminal -e "python3 Assignment/cool.py -v"
+	xfce4-terminal -e "python3 Assignment/wate.py -v"
+	xfce4-terminal -e "python3 Assignment/co2i.py -v"
