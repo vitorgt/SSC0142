@@ -24,5 +24,5 @@ if __name__ == "__main__":
         client.Client(7777, "HUMI", "MANA", mana, v, HOST).start()
         client.Client(8888, "HUMI", "ENVI", envi, v, HOST).start()
     else:
-        client.Client(7777, "HUMI", "MANA", mana, v).start()
-        client.Client(8888, "HUMI", "ENVI", envi, v).start()
+        client.Client(7777, "HUMI", "MANA", mana, True).start()
+        client.Client(8888, "HUMI", "ENVI", envi, True).start()

@@ -15,7 +15,7 @@ def temp(st, serverData):
             print(st.server.ID+" <- "+st.ID+": "+str(data, "utf-8"))
         data = str(data, "utf-8").split("|")
         if data[1] == "PUT" and data[2] == st.ID:
-            serverData.append(int(data[3]))
+            serverData.append(float(data[3]))
 
 
 def humi(st, serverData):
@@ -30,7 +30,7 @@ def humi(st, serverData):
             print(st.server.ID+" <- "+st.ID+": "+str(data, "utf-8"))
         data = str(data, "utf-8").split("|")
         if data[1] == "PUT" and data[2] == st.ID:
-            serverData.append(int(data[3]))
+            serverData.append(float(data[3]))
 
 
 def co2L(st, serverData):
@@ -45,7 +45,7 @@ def co2L(st, serverData):
             print(st.server.ID+" <- "+st.ID+": "+str(data, "utf-8"))
         data = str(data, "utf-8").split("|")
         if data[1] == "PUT" and data[2] == st.ID:
-            serverData.append(int(data[3]))
+            serverData.append(float(data[3]))
 
 
 def heat(st, serverData):
@@ -89,6 +89,19 @@ def cool(st, serverData):
                 print(st.server.ID+" -> "+st.ID+": "+"|PUT|COOL|OFF|")
             st.conn.send(bytes("|PUT|COOL|OFF|", "utf-8"))
 
+def wate(st, serverData):
+    while True:
+        if len(humiData) != 0 and humiData[-1] < min_wate and not serverData:
+            serverData = True
+            if st.server.v:
+                print(st.server.ID+" -> "+st.ID+": "+"|PUT|WATE|ON|")
+            st.conn.send(bytes("|PUT|WATE|ON|", "utf-8"))
+        if len(humiData) != 0 and humiData[-1] > min_wate and serverData:
+            serverData = False
+            if st.server.v:
+                print(st.server.ID+" -> "+st.ID+": "+"|PUT|WATE|OFF|")
+            st.conn.send(bytes("|PUT|WATE|OFF|", "utf-8"))
+
 
 tempData = []
 humiData = []
@@ -100,6 +113,7 @@ co2iData = False
 max_temp = 32
 min_temp = 15
 min_co2l = 6
+min_wate = 0.9
 
 storage = {
     "TEMP": tempData,
@@ -117,7 +131,8 @@ functions = {
     "CO2L": co2L,
     "HEAT": heat,
     "CO2I": co2I,
-    "COOL": cool
+    "COOL": cool,
+    "WATE": wate
 }
 
 
