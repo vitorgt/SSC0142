@@ -53,24 +53,25 @@ def actuator(sck, infos):
     if sck.server.v:
         print(sck.ID+" logged in")
     while True:
-        if len(infos[0]) != 0:
-            if infos[1](infos[0][-1], infos[2][0]) and not infos[3][0]:
-                infos[3][0] = True
-                string = "|PUT|"+sck.ID+"|ON|"
-                if sck.server.v:
-                    print(sck.server.ID+" -> "+sck.ID+": "+string)
-                sck.conn.send(bytes(string, "utf-8"))
-            if infos[4](infos[0][-1], infos[2][0]) and infos[3][0]:
-                infos[3][0] = False
-                string = "|PUT|"+sck.ID+"|OFF|"
-                if sck.server.v:
-                    print(sck.server.ID+" -> "+sck.ID+": "+string)
-                sck.conn.send(bytes(string, "utf-8"))
+        if len(infos[0]) != 0 and infos[1](infos[0][-1], infos[2][0]) and not infos[3][0]:
+            infos[3][0] = True
+            string = "|PUT|"+sck.ID+"|ON|"
+            if sck.server.v:
+                print(sck.server.ID+" -> "+sck.ID+": "+string)
+            sck.conn.send(bytes(string, "utf-8"))
+        if len(infos[0]) != 0 and infos[4](infos[0][-1], infos[2][0]) and infos[3][0]:
+            infos[3][0] = False
+            string = "|PUT|"+sck.ID+"|OFF|"
+            if sck.server.v:
+                print(sck.server.ID+" -> "+sck.ID+": "+string)
+            sck.conn.send(bytes(string, "utf-8"))
 
 
 def mana(serverThread):
     if serverThread.ID in actuators:
         actuator(serverThread, actuators[serverThread.ID])
+    elif serverThread.ID == "CLIE":
+        pass
     else:
         sensor(serverThread)
 

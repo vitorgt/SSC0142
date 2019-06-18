@@ -101,6 +101,9 @@ class Server:
 
         # Reading command line inputs
         print("Type \"quit\" to quit at anytime")
+        print("Type \"v\" to toggle verbose mode at anytime")
         while True:
             if "quit" in input():
                 sys.exit()
+            if "v" in input():
+                self.v = not self.v

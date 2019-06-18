@@ -3,45 +3,72 @@
 import time
 import server
 import random
+import operator
 
 
-temperature = 40.0
-humidity = 0.6
-co2level = 550.0
+status = {
+    "TEMP": 10.0,
+    "HUMI": 0.6,
+    "CO2L": 550.0
+}
 
-
-def temp(st):
-    print("yi from new temp")
-    while True:
-        time.sleep(10)
-        if st.server.v:
-            print(st.server.ID, "-> "+st.ID+": |PUT|"+st.server.ID+"|"+str(temperature)+"|")
-        st.conn.send(bytes("|PUT|"+st.ID+"|"+str(temperature)+"|", "utf-8"))
-
-
-def humi():
-    print("yi from new humi")
-
-
-functions = {
-    "TEMP": temp,
-    "HUMI": humi
+actuators = {
+    "HEAT": ["TEMP", operator.add],
+    "COOL": ["TEMP", operator.sub],
+    "WATE": ["HUMI", operator.add],
+    "CO2I": ["CO2L", operator.add]
 }
 
 
+def sensor(sck):
+    if sck.server.v:
+        print(sck.ID+" logged in")
+    while True:
+        string = "|PUT|"+sck.ID+"|"+str(status[sck.ID])+"|"
+        if sck.server.v:
+            print(sck.server.ID+" -> "+sck.ID+": "+string)
+        sck.conn.send(bytes(string, "utf-8"))
+        time.sleep(10)
+
+
+def actuator(sck):
+    if sck.server.v:
+        print(sck.ID+" logged in")
+    while True:
+        while True:
+            data = sck.conn.recv(1024)
+            if data:
+                break
+        if sck.server.v:
+            print(sck.server.ID+" <- "+sck.ID+": "+str(data, "utf-8"))
+        data = str(data, "utf-8").split("|")
+        if data[1] == "PUT" and data[2] == sck.ID:
+            status[actuators[sck.ID][0]] = actuators[sck.ID][1](
+                status[actuators[sck.ID][0]], float(data[3]))
+
+
 def envi(serverThread):
-    functions[serverThread.ID](serverThread)
+    if serverThread.ID in actuators:
+        actuator(serverThread)
+    else:
+        sensor(serverThread)
 
 
 @server.threaded
-def enviRand():
-    temperature += random.random()*2-1  # [-1, 1]
-    humidity += random.random()-0.5  # [-0.5, 0.5]
-    if humidity > 1:
-        humidity = 1
-    co2level += random.random()*4-2  # [-2, 2]
+def enviRand(status):
+    while True:
+        status["TEMP"] += random.random()*2-1  # [-1, 1]
+        status["HUMI"] += random.random()*0.25-0.125  # [-0.125, 0.125]
+        if status["HUMI"] > 1:
+            status["HUMI"] = 1
+        if status["HUMI"] < 0:
+            status["HUMI"] = 0
+        status["CO2L"] += random.random()*500-250  # [-250, 250]
+        if status["CO2L"] < 0:
+            status["CO2L"] = 0
+        time.sleep(random.randint(0, 3))
 
 
 if __name__ == "__main__":
-    enviRand()
+    enviRand(status)
     environment = server.Server(8888, "ENVI", envi)
