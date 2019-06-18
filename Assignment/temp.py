@@ -9,7 +9,7 @@ def mana(client):
     while True:
         time.sleep(10)
         if client.v:
-            print(client.ID, "sending:  |PUT|"+client.ID+"|40|")
+            print(client.ID, "sending to MANA:  |PUT|"+client.ID+"|40|")
         client.sck.send(bytes("|PUT|"+client.ID+"|40|", "utf-8"))
 
 
@@ -21,8 +21,8 @@ def envi(client):
 if __name__ == "__main__":
     HOST, v = client.inputs()
     if HOST != None:
-        client.Client(7777, "TEMP", mana, v, HOST).start()
-        # client.Client(8888, "TEMP", envi, v, HOST).start()
+        client.Client(7777, "TEMP", "MANA", mana, v, HOST).start()
+        client.Client(8888, "TEMP", "ENVI", envi, v, HOST).start()
     else:
-        client.Client(7777, "TEMP", mana, v).start()
-        # client.Client(8888, "TEMP", envi, v).start()
+        client.Client(7777, "TEMP", "MANA", mana, v).start()
+        client.Client(8888, "TEMP", "ENVI", envi, v).start()

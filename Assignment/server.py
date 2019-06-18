@@ -45,10 +45,11 @@ class ServerThread(threading.Thread):
 
         # Acknowledgement
         if "CON" == data[1]:
-            if self.server.v:
-                print(self.server.ID, "sending:  |ACK"+"|".join(data))
-            self.conn.send(bytes("|ACK"+"|".join(data), "utf-8"))
             self.ID = data[2]
+            if self.server.v:
+                print(self.server.ID, "sending to " +
+                      self.ID+":  |ACK"+"|".join(data))
+            self.conn.send(bytes("|ACK"+"|".join(data), "utf-8"))
         else:
             raise ConnectionRefusedError("unknown protocol received")
 

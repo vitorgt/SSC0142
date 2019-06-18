@@ -3,26 +3,52 @@
 import server
 
 
-class Storage:
-    def __init__(self):
-        self.on = False
-        self.data = []
+def temp(st, serverData):
+    if st.server.v:
+        print(st.ID+" activated")
+    while True:
+        while True:
+            data = st.conn.recv(1024)
+            if data:
+                break
+        if st.server.v:
+            print(st.server.ID+" received from "+st.ID+": "+str(data, "utf-8"))
+        data = str(data, "utf-8").split("|")
+        if data[1] == "PUT" and data[2] == st.ID:
+            serverData.append(data[3])
 
 
-storages = {
-    "TEMP": Storage(),
-    "HUMI": Storage(),
-    "CO2L": Storage(),
-    "HEAT": Storage(),
-    "COOL": Storage(),
-    "WATE": Storage(),
-    "CO2I": Storage()
+
+def humi(st, serverData):
+    print("hi humi from server")
+
+
+tempData = []
+humiData = []
+co2lData = []
+heatData = []
+coolData = []
+wateData = []
+co2iData = []
+
+storage = {
+    "TEMP": tempData,
+    "HUMI": humiData,
+    "CO2L": co2lData,
+    "HEAT": heatData,
+    "COOL": coolData,
+    "WATE": wateData,
+    "CO2I": co2iData
+}
+
+functions = {
+    "TEMP": temp,
+    "HUMI": humi
 }
 
 
 def mana(serverThread):
-    clientStorage = storages[serverThread.ID]
-    clientStorage.on = True
+    functions[serverThread.ID](serverThread, storage[serverThread.ID])
 
 
 if __name__ == "__main__":
