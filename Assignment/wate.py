@@ -3,7 +3,7 @@
 import time
 import client
 
-# Sends temperatures to Manager
+# Sends humidity to Manager
 on = False
 
 def mana(client):
@@ -20,21 +20,21 @@ def mana(client):
         else:
             on = False
 
-# Receives temperature from Environment
+# Receives humidity from Environment
 def envi(client):
     if on:
         while True:
             time.sleep(10)
             if client.v:
-                print(client.ID, "-> ENVI: |PUT|"+client.ID+"|7|")
-            client.sck.send(bytes("|PUT|"+client.ID+"|7|", "utf-8"))
+                print(client.ID, "-> ENVI: |PUT|"+client.ID+"|0.2|")
+            client.sck.send(bytes("|PUT|"+client.ID+"|0.2|", "utf-8"))
 
 
 if __name__ == "__main__":
     HOST, v = client.inputs()
     if HOST != None:
-        client.Client(7777, "COOL", "MANA", mana, v, HOST).start()
-        client.Client(8888, "COOL", "ENVI", envi, v, HOST).start()
+        client.Client(7777, "WATE", "MANA", mana, v, HOST).start()
+        client.Client(8888, "WATE", "ENVI", envi, v, HOST).start()
     else:
-        client.Client(7777, "COOL", "MANA", mana, True).start()
-        client.Client(8888, "COOL", "ENVI", envi, True).start()
+        client.Client(7777, "WATE", "MANA", mana, True).start()
+        client.Client(8888, "WATE", "ENVI", envi, True).start()
