@@ -1,14 +1,13 @@
-
 #!/usr/bin/python3
 
 import time
 import server
-from random import random
+import random
 
 
-temperature = 40
+temperature = 40.0
 humidity = 0.6
-co2level = 550
+co2level = 550.0
 
 
 def temp(st):
@@ -16,8 +15,8 @@ def temp(st):
     while True:
         time.sleep(10)
         if st.server.v:
-            print(st.server.ID, "-> "+st.server.ID+": |PUT|"+st.server.ID+"|"+temperature+"|")
-        st.conn.send(bytes("|PUT|"+st.server.ID+"|"+temperature+"|", "utf-8"))
+            print(st.server.ID, "-> "+st.ID+": |PUT|"+st.server.ID+"|"+str(temperature)+"|")
+        st.conn.send(bytes("|PUT|"+st.ID+"|"+str(temperature)+"|", "utf-8"))
 
 
 def humi():
@@ -33,10 +32,16 @@ functions = {
 def envi(serverThread):
     functions[serverThread.ID](serverThread)
 
+
 @server.threaded
-def tempRand(temperature):
-    temperature += random()*2-1
+def enviRand():
+    temperature += random.random()*2-1  # [-1, 1]
+    humidity += random.random()-0.5  # [-0.5, 0.5]
+    if humidity > 1:
+        humidity = 1
+    co2level += random.random()*4-2  # [-2, 2]
+
 
 if __name__ == "__main__":
-    tempRand(temperature)
+    enviRand()
     environment = server.Server(8888, "ENVI", envi)
