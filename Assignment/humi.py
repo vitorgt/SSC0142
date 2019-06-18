@@ -4,7 +4,7 @@ import time
 import client
 
 
-# Sends hunidity to Manager
+# Sends humidity to Manager
 def mana(client):
     while True:
         time.sleep(10)
@@ -13,7 +13,7 @@ def mana(client):
         client.sck.send(bytes("|PUT|"+client.ID+"|0.6|", "utf-8"))
 
 
-# Receives temperature from Environment
+# Receives humidity from Environment
 def envi(client):
     pass
 

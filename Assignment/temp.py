@@ -25,5 +25,5 @@ if __name__ == "__main__":
         client.Client(7777, "TEMP", "MANA", mana, v, HOST).start()
         client.Client(8888, "TEMP", "ENVI", envi, v, HOST).start()
     else:
-        client.Client(7777, "TEMP", "MANA", mana, v).start()
-        client.Client(8888, "TEMP", "ENVI", envi, v).start()
+        client.Client(7777, "TEMP", "MANA", mana, True).start()
+        client.Client(8888, "TEMP", "ENVI", envi, True).start()

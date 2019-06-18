@@ -15,7 +15,7 @@ def temp(st, serverData):
             print(st.server.ID+" <- "+st.ID+": "+str(data, "utf-8"))
         data = str(data, "utf-8").split("|")
         if data[1] == "PUT" and data[2] == st.ID:
-            serverData.append(data[3])
+            serverData.append(int(data[3]))
 
 
 def humi(st, serverData):
@@ -49,7 +49,18 @@ def heat(st, serverData):
                 print(st.server.ID+" -> "+st.ID+": "+"|PUT|HEAT|OFF|")
             st.conn.send(bytes("|PUT|HEAT|OFF|", "utf-8"))
 
-
+def cool(st, serverData):
+    while True:
+        if len(tempData) != 0 and tempData[-1] > max_temp and not serverData:
+            serverData = True
+            if st.server.v:
+                print(st.server.ID+" -> "+st.ID+": "+"|PUT|COOL|ON|")
+            st.conn.send(bytes("|PUT|COOL|ON|", "utf-8"))
+        if len(tempData) != 0 and tempData[-1] < max_temp and serverData:
+            serverData = False
+            if st.server.v:
+                print(st.server.ID+" -> "+st.ID+": "+"|PUT|COOL|OFF|")
+            st.conn.send(bytes("|PUT|COOL|OFF|", "utf-8"))
 
 
 tempData = []
@@ -76,7 +87,8 @@ functions = {
     "TEMP": temp,
     "HUMI": humi,
     "CO2L": co2L,
-    "HEAT": heat
+    "HEAT": heat,
+    "COOL": cool
 }
 
 
