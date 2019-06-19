@@ -12,7 +12,13 @@ class Sensor():
             string = "|PUT|"+client.ID+"|"+str(self.info[0])+"|"
             if client.v:
                 print(client.ID+" -> "+client.target+": "+string)
-            client.sck.send(bytes(string, "utf-8"))
+            try:
+                client.sck.send(bytes(string, "utf-8"))
+            except BrokenPipeError:
+                print(client.target+" disconnected")
+                print(client.ID+" disconnecting from "+client.target)
+                client.sck.close()
+                break
             time.sleep(1)
 
     # Receives data from Environment

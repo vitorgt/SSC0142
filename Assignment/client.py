@@ -50,7 +50,13 @@ class Client(threading.Thread):
         # Identification
         if self.v:
             print(self.ID+" -> "+self.target+": |CON|"+self.ID+"|")
-        self.sck.send(bytes("|CON|"+self.ID+"|", "utf-8"))
+        try:
+            self.sck.send(bytes("|CON|"+self.ID+"|", "utf-8"))
+        except BrokenPipeError:
+            print(self.target+" disconnected")
+            print(self.ID+" disconnecting from "+self.target)
+            self.sck.close()
+            sys.exit()
 
         # Reading identification acknowledge
         data = None

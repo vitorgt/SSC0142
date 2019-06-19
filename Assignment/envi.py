@@ -27,7 +27,12 @@ def sensor(sck):
         string = "|PUT|"+sck.ID+"|"+str(status[sck.ID])+"|"
         if sck.server.v:
             print(sck.server.ID+" -> "+sck.ID+": "+string)
-        sck.conn.send(bytes(string, "utf-8"))
+        try:
+            sck.conn.send(bytes(string, "utf-8"))
+        except BrokenPipeError:
+            print(sck.ID+" disconnected")
+            print(sck.server.ID+" disconnecting from "+sck.ID)
+            sck.conn.close()
         time.sleep(1)
 
 

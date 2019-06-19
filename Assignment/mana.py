@@ -77,10 +77,16 @@ def actuator(sck, infos):
     if sck.server.v:
         print(sck.ID+" logged in")
     while True:
-        if len(infos[0]) != 0 and infos[1](infos[0][-1], infos[2][0]) and not infos[3][0]:
-            sendActuatorSwitch(sck, infos, "ON")
-        if len(infos[0]) != 0 and infos[4](infos[0][-1], infos[2][0]) and infos[3][0]:
-            sendActuatorSwitch(sck, infos, "OFF")
+        try:
+            if len(infos[0]) != 0 and infos[1](infos[0][-1], infos[2][0]) and not infos[3][0]:
+                sendActuatorSwitch(sck, infos, "ON")
+            if len(infos[0]) != 0 and infos[4](infos[0][-1], infos[2][0]) and infos[3][0]:
+                sendActuatorSwitch(sck, infos, "OFF")
+        except BrokenPipeError:
+            print(sck.ID+" disconnected")
+            print(sck.server.ID+" disconnecting from "+sck.ID)
+            sck.conn.close()
+            break
 
 
 def mana(serverThread):

@@ -30,7 +30,7 @@ class ServerThread(threading.Thread):
     def closeConn(self):
         print("Closing connection with", self.addr)
         self.conn.close()
-        sys.exit(0)
+        sys.exit()
 
     def run(self):
 
@@ -51,7 +51,13 @@ class ServerThread(threading.Thread):
             string = "|ACK|CON|"
             if self.server.v:
                 print(self.server.ID, "-> "+self.ID+": "+string)
-            self.conn.send(bytes(string, "utf-8"))
+            try:
+                self.conn.send(bytes(string, "utf-8"))
+            except BrokenPipeError:
+                print(self.ID+" disconnected")
+                print(self.server.ID+" disconnecting from "+self.ID)
+                self.conn.close()
+                sys.exit()
         else:
             raise ConnectionRefusedError("unknown protocol received")
 

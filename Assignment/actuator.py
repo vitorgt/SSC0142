@@ -25,7 +25,13 @@ class Actuator():
                 string = "|ACK|PUT|"
                 if client.v:
                     print(client.ID, "-> "+client.target+": "+string)
-                client.sck.send(bytes(string, "utf-8"))
+                try:
+                    client.sck.send(bytes(string, "utf-8"))
+                except BrokenPipeError:
+                    print(client.target+" disconnected")
+                    print(client.ID+" disconnecting from "+client.target)
+                    client.sck.close()
+                    break
 
     # Sends commands to Environment
     def envi(self, client):
@@ -34,7 +40,13 @@ class Actuator():
                 string = "|PUT|"+client.ID+"|"+str(self.strength)+"|"
                 if client.v:
                     print(client.ID+" -> "+client.target+": "+string)
-                client.sck.send(bytes(string, "utf-8"))
+                try:
+                    client.sck.send(bytes(string, "utf-8"))
+                except BrokenPipeError:
+                    print(client.target+" disconnected")
+                    print(client.ID+" disconnecting from "+client.target)
+                    client.sck.close()
+                    break
                 time.sleep(1)
 
     def __init__(self, ID, strength):
