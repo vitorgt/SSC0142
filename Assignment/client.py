@@ -28,6 +28,7 @@ class Client(threading.Thread):
         self.v = v
         self.HOST = HOST
         self.sck = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.sck.setblocking(3.0)
         threading.Thread.__init__(self)
 
     def run(self):
@@ -48,12 +49,15 @@ class Client(threading.Thread):
 
         # Identification
         if self.v:
-            print(self.ID+" -> "+self.target+":  |CON|"+self.ID+"|")
+            print(self.ID+" -> "+self.target+": |CON|"+self.ID+"|")
         self.sck.send(bytes("|CON|"+self.ID+"|", "utf-8"))
 
         # Reading identification acknowledge
         while True:
-            data = self.sck.recv(1024)
+            try:
+                data = self.sck.recv(1024)
+            except Exception:
+                pass
             if data:
                 break
         if self.v:

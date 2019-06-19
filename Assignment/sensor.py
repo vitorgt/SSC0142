@@ -19,7 +19,10 @@ class Sensor():
     def envi(self, client):
         while True:
             while True:
-                data = client.sck.recv(1024)
+                try:
+                    data = client.sck.recv(1024)
+                except Exception:
+                    pass
                 if data:
                     break
             if client.v:

@@ -36,7 +36,10 @@ def actuator(sck):
         print(sck.ID+" logged in")
     while True:
         while True:
-            data = sck.conn.recv(1024)
+            try:
+                data = sck.conn.recv(1024)
+            except Exception:
+                pass
             if data:
                 break
         if sck.server.v:
@@ -50,6 +53,8 @@ def actuator(sck):
 def envi(serverThread):
     if serverThread.ID in actuators:
         actuator(serverThread)
+    elif serverThread.ID == "CLIE":
+        pass
     else:
         sensor(serverThread)
 

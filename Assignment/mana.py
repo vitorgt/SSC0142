@@ -39,7 +39,10 @@ def sensor(sck):
         print(sck.ID+" logged in")
     while True:
         while True:
-            data = sck.conn.recv(1024)
+            try:
+                data = sck.conn.recv(1024)
+            except Exception:
+                pass
             if data:
                 break
         if sck.server.v:
@@ -49,22 +52,36 @@ def sensor(sck):
             storage[sck.ID].append(float(data[3]))
 
 
+def sendActuatorSwitch(sck, infos, onoff):
+    ack = False
+    while not ack:
+        string = "|PUT|"+sck.ID+"|"+onoff+"|"
+        if sck.server.v:
+            print(sck.server.ID+" -> "+sck.ID+": "+string)
+        sck.conn.send(bytes(string, "utf-8"))
+        data = None
+        try:
+            data = sck.conn.recv(1024)
+        except Exception:
+            print("Timed out: \""+sck.server.ID+" -> "+sck.ID+": "+string+"\"")
+            print("Retrying")
+        if data:
+            if sck.server.v:
+                print(sck.server.ID+" <- "+sck.ID+": "+str(data, "utf-8"))
+            data = str(data, "utf-8").split("|")
+            if data[1] == "ACK" and data[2] == "PUT":
+                ack = True
+                infos[3][0] = (onoff == "ON")  # if "ON" it stores True, else False
+
+
 def actuator(sck, infos):
     if sck.server.v:
         print(sck.ID+" logged in")
     while True:
         if len(infos[0]) != 0 and infos[1](infos[0][-1], infos[2][0]) and not infos[3][0]:
-            infos[3][0] = True
-            string = "|PUT|"+sck.ID+"|ON|"
-            if sck.server.v:
-                print(sck.server.ID+" -> "+sck.ID+": "+string)
-            sck.conn.send(bytes(string, "utf-8"))
+            sendActuatorSwitch(sck, infos, "ON")
         if len(infos[0]) != 0 and infos[4](infos[0][-1], infos[2][0]) and infos[3][0]:
-            infos[3][0] = False
-            string = "|PUT|"+sck.ID+"|OFF|"
-            if sck.server.v:
-                print(sck.server.ID+" -> "+sck.ID+": "+string)
-            sck.conn.send(bytes(string, "utf-8"))
+            sendActuatorSwitch(sck, infos, "OFF")
 
 
 def mana(serverThread):

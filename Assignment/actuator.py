@@ -8,7 +8,10 @@ class Actuator():
     def mana(self, client):
         while True:
             while True:
-                data = client.sck.recv(1024)
+                try:
+                    data = client.sck.recv(1024)
+                except Exception:
+                    pass
                 if data:
                     break
             if client.v:
@@ -19,9 +22,13 @@ class Actuator():
                     self.on[0] = True
                 else:
                     self.on[0] = False
+                # Acknowledgement
+                string = "|ACK|PUT|"
+                if client.v:
+                    print(client.ID, "-> "+client.target+": "+string)
+                client.sck.send(bytes(string, "utf-8"))
 
     # Sends commands to Environment
-
     def envi(self, client):
         while True:
             if self.on[0]:

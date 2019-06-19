@@ -36,7 +36,10 @@ class ServerThread(threading.Thread):
 
         # Receives connections
         while True:
-            data = self.conn.recv(1024)
+            try:
+                data = self.conn.recv(1024)
+            except Exception:
+                pass
             if data:
                 break
         if self.server.v:
@@ -63,6 +66,7 @@ class Server:
     def connectionsListener(self):
         while True:
             conn, addr = self.server.accept()
+            conn.settimeout(3.0)
             ServerThread(server=self, conn=conn, addr=addr).start()
 
     # Tries to close server
