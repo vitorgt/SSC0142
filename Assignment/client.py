@@ -53,13 +53,12 @@ class Client(threading.Thread):
         self.sck.send(bytes("|CON|"+self.ID+"|", "utf-8"))
 
         # Reading identification acknowledge
-        while True:
+        data = None
+        while not data:
             try:
                 data = self.sck.recv(1024)
             except Exception:
                 pass
-            if data:
-                break
         if self.v:
             print(self.ID+" <- "+self.target+":", str(data, "utf-8"))
         data = str(data, "utf-8").split("|")

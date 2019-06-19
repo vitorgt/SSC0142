@@ -38,13 +38,12 @@ def sensor(sck):
     if sck.server.v:
         print(sck.ID+" logged in")
     while True:
-        while True:
+        data = None
+        while not data:
             try:
                 data = sck.conn.recv(1024)
             except Exception:
                 pass
-            if data:
-                break
         if sck.server.v:
             print(sck.server.ID+" <- "+sck.ID+": "+str(data, "utf-8"))
         data = str(data, "utf-8").split("|")

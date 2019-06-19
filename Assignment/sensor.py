@@ -18,13 +18,12 @@ class Sensor():
     # Receives data from Environment
     def envi(self, client):
         while True:
-            while True:
+            data = None
+            while not data:
                 try:
                     data = client.sck.recv(1024)
                 except Exception:
                     pass
-                if data:
-                    break
             if client.v:
                 print(client.ID+" <- "+client.target+": "+str(data, "utf-8"))
             data = str(data, "utf-8").split("|")

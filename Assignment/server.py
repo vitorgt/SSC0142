@@ -35,13 +35,12 @@ class ServerThread(threading.Thread):
     def run(self):
 
         # Receives connections
-        while True:
+        data = None
+        while not data:
             try:
                 data = self.conn.recv(1024)
             except Exception:
                 pass
-            if data:
-                break
         if self.server.v:
             print(self.server.ID, "<-:", str(data, "utf-8"))
         data = str(data, "utf-8").split("|")
