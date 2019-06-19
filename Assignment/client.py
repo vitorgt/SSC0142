@@ -59,7 +59,7 @@ class Client(threading.Thread):
         if self.v:
             print(self.ID+" <- "+self.target+":", str(data, "utf-8"))
         data = str(data, "utf-8").split("|")
-        if data[1] == "ACK" and data[2] == "CON" and data[3] == self.ID:
+        if data[1] == "ACK" and data[2] == "CON":
             # Running client specific function
             self.fn(self)
         else:

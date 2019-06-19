@@ -28,7 +28,7 @@ def sensor(sck):
         if sck.server.v:
             print(sck.server.ID+" -> "+sck.ID+": "+string)
         sck.conn.send(bytes(string, "utf-8"))
-        time.sleep(10)
+        time.sleep(1)
 
 
 def actuator(sck):

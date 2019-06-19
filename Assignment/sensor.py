@@ -13,7 +13,7 @@ class Sensor():
             if client.v:
                 print(client.ID+" -> "+client.target+": "+string)
             client.sck.send(bytes(string, "utf-8"))
-            time.sleep(10)
+            time.sleep(1)
 
     # Receives data from Environment
     def envi(self, client):
