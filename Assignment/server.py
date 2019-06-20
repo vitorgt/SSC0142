@@ -7,10 +7,7 @@ import threading
 # Thread wrapper
 def threaded(fn):
     def wrapper(*args, **kwargs):
-        thread = threading.Thread(target=fn, args=args, kwargs=kwargs)
-        # lighter thread flag, kills thread when main thread dies
-        thread.daemon = True
-        thread.start()
+        threading.Thread(target=fn, args=args, kwargs=kwargs, daemon=True).start()
     return wrapper
 
 
