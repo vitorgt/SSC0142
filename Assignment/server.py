@@ -50,7 +50,7 @@ class ServerThread(threading.Thread):
                 print(self.server.ID, "-> "+self.ID+": "+string)
             try:
                 self.conn.send(bytes(string, "utf-8"))
-            except BrokenPipeError:
+            except OSError:
                 print(self.ID+" disconnected")
                 print(self.server.ID+" disconnecting from "+self.ID)
                 self.conn.close()

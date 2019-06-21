@@ -29,10 +29,11 @@ def sensor(sck):
             print(sck.server.ID+" -> "+sck.ID+": "+string)
         try:
             sck.conn.send(bytes(string, "utf-8"))
-        except BrokenPipeError:
+        except OSError:
             print(sck.ID+" disconnected")
             print(sck.server.ID+" disconnecting from "+sck.ID)
             sck.conn.close()
+            return
         time.sleep(1)
 
 

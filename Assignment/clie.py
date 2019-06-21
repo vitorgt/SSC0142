@@ -28,11 +28,11 @@ class Clie():
                         print(client.ID+" -> "+client.target+": "+string)
                     try:
                         client.sck.send(bytes(string, "utf-8"))
-                    except BrokenPipeError:
+                    except OSError:
                         print(client.target+" disconnected")
                         print(client.ID+" disconnecting from "+client.target)
                         client.sck.close()
-                        break
+                        return
                     data = None
                     while not data:
                         try:
@@ -42,8 +42,14 @@ class Clie():
                     if client.v:
                         print(client.ID+" <- "+client.target+": "+str(data, "utf-8"))
                     data = str(data, "utf-8").split("|")
-                    if data[1] == "ACK":
-                        pass
+                    if string.split("|")[1] == "GET":
+                        for x in range(len(data)):
+                            if data[x] == "PUT":
+                                print(data[x+1], data[x+2])
+                        ack = True
+                    else:
+                        if data[1] == "ACK":
+                            ack = True
 
     # Sends commands to Environment
     def envi(self, client):
@@ -141,8 +147,8 @@ class Clie():
                 print("Which of the following do you want to change?")
                 print("\t1: Maximum temperature")
                 print("\t2: Minimum temperature")
-                print("\t3: Minimum CO2 level")
-                print("\t4: Minimum humidity level")
+                print("\t3: Minimum humidity level")
+                print("\t4: Minimum CO2 level")
                 self.buffer[0] = input()
                 if "1" in self.buffer[0]:
                     print("Change maximum temperature to: ")
@@ -151,11 +157,11 @@ class Clie():
                     print("Change minimum temperature to: ")
                     self.request[0] += "|DEF|TEMP|MIN|"+str(readFloat())+"|"
                 if "3" in self.buffer[0]:
-                    print("Change minimum CO2 level to: ")
-                    self.request[0] += "|DEF|CO2L|MIN|"+str(readFloat())+"|"
-                if "4" in self.buffer[0]:
                     print("Change minimum humidity level to: ")
                     self.request[0] += "|DEF|HUMI|MIN|"+str(readFloat())+"|"
+                if "4" in self.buffer[0]:
+                    print("Change minimum CO2 level to: ")
+                    self.request[0] += "|DEF|CO2L|MIN|"+str(readFloat())+"|"
                 self.manaFlag[0] = True
             elif "ENV" in self.buffer[0]:
                 print("Which of the following do you want to change?")

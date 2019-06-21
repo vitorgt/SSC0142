@@ -27,11 +27,11 @@ class Actuator():
                     print(client.ID, "-> "+client.target+": "+string)
                 try:
                     client.sck.send(bytes(string, "utf-8"))
-                except BrokenPipeError:
+                except OSError:
                     print(client.target+" disconnected")
                     print(client.ID+" disconnecting from "+client.target)
                     client.sck.close()
-                    break
+                    return
 
     # Sends commands to Environment
     def envi(self, client):
@@ -42,11 +42,11 @@ class Actuator():
                     print(client.ID+" -> "+client.target+": "+string)
                 try:
                     client.sck.send(bytes(string, "utf-8"))
-                except BrokenPipeError:
+                except OSError:
                     print(client.target+" disconnected")
                     print(client.ID+" disconnecting from "+client.target)
                     client.sck.close()
-                    break
+                    return
                 time.sleep(1)
 
     def __init__(self, ID, strength):

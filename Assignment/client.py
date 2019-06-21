@@ -52,7 +52,7 @@ class Client(threading.Thread):
             print(self.ID+" -> "+self.target+": |CON|"+self.ID+"|")
         try:
             self.sck.send(bytes("|CON|"+self.ID+"|", "utf-8"))
-        except BrokenPipeError:
+        except OSError:
             print(self.target+" disconnected")
             print(self.ID+" disconnecting from "+self.target)
             self.sck.close()
