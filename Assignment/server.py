@@ -4,34 +4,58 @@ import socket
 import threading
 
 
-# Thread wrapper
 def threaded(fn):
+    """Wrapper that makes any function a new thread"""
     def wrapper(*args, **kwargs):
-        threading.Thread(target=fn, args=args, kwargs=kwargs, daemon=True).start()
+        threading.Thread(target=fn, args=args,
+                         kwargs=kwargs, daemon=True).start()
     return wrapper
 
 
-# Each new connection opens a new server thread
 class ServerThread(threading.Thread):
+    """
+    Class that handles each new connection with server making it a new thread
+
+    Attributes
+    ----------
+    server : Server object
+        A reference to acess atributes on Server;
+    conn : Socket
+        Connection to socket;
+    addr : IP address
+        IP's connection to socket;
+    ID : str
+        Connector's ID;
+
+    Raises
+    ------
+    ConnectionRefusedError
+        If protocols received out of sync or unknown protocol received
+    """
 
     def __init__(self, server, conn, addr):
+
         self.server = server
         self.conn = conn
         self.addr = addr[0]
         self.ID = None
         print("New connection with", self.addr)
+
         # When exiting application, close connection
-        atexit.register(ServerThread.closeConn, self)
+        atexit.register(ServerThread.closeConn, self=self)
+
+        # Starts running the thread
         threading.Thread.__init__(self)
 
     def closeConn(self):
+        """Attempts to close the connection and kill thread"""
         print("Closing connection with", self.addr)
         self.conn.close()
         sys.exit()
 
     def run(self):
 
-        # Receives connections
+        # Receives connection
         data = None
         while not data:
             try:
@@ -47,7 +71,7 @@ class ServerThread(threading.Thread):
             self.ID = data[2]
             string = "|ACK|CON|"
             if self.server.v:
-                print(self.server.ID, "-> "+self.ID+": "+string)
+                print(self.server.ID+" -> "+self.ID+": "+string)
             try:
                 self.conn.send(bytes(string, "utf-8"))
             except OSError:
@@ -58,7 +82,7 @@ class ServerThread(threading.Thread):
         else:
             raise ConnectionRefusedError("unknown protocol received")
 
-        # Running server specific function
+        # Runs server specific function
         self.server.fn(self)
 
 
@@ -71,7 +95,7 @@ class Server:
             conn.settimeout(3.0)
             ServerThread(server=self, conn=conn, addr=addr).start()
 
-    # Tries to close server
+    # Attempts to close server
     def closeServer(self):
         try:
             self.server.close()

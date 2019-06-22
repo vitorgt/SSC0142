@@ -102,9 +102,9 @@ def actuator(sck, infos):
         print(sck.ID+" logged in")
     while True:
         try:
-            if (len(infos[0]) != 0 and infos[1](infos[0][-1], infos[2][0]) and not infos[3][0]) or infos[5][0]:
+            if ((len(infos[0]) != 0 and infos[1](infos[0][-1], infos[2][0])) or infos[5][0]) and not infos[3][0]:
                 sendActuatorSwitch(sck, infos, "ON")
-            if len(infos[0]) != 0 and infos[4](infos[0][-1], infos[2][0]) and infos[3][0] and not infos[5][0]:
+            if len(infos[0]) != 0 and infos[4](infos[0][-1], infos[2][0]) and not infos[5][0] and infos[3][0]:
                 sendActuatorSwitch(sck, infos, "OFF")
         except OSError:
             print(sck.ID+" disconnected")

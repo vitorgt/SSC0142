@@ -8,12 +8,12 @@ import threading
 # "-v" to activate verbose mode
 def inputs():
     HOST = None
-    v = False
+    v = True
     for x in range(len(sys.argv)):
         if "-ip" in sys.argv[x]:
             HOST = sys.argv[x+1]
         if "-v" in sys.argv[x]:
-            v = True
+            v = False
     return HOST, v
 
 

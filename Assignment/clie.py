@@ -48,16 +48,38 @@ class Clie():
                                 print(data[x+1], data[x+2])
                         ack = True
                     else:
-                        if data[1] == "ACK":
+                        if data[1] == "ACK" and data[2] == string.split("|")[1]:
                             ack = True
 
     # Sends commands to Environment
     def envi(self, client):
         while True:
             if self.enviFlag[0]:
-                print("hi from envi", self.request[0])
                 self.enviFlag[0] = False
+                string = self.request[0]
                 self.request[0] = ""
+                ack = False
+                while not ack:
+                    if client.v:
+                        print(client.ID+" -> "+client.target+": "+string)
+                    try:
+                        client.sck.send(bytes(string, "utf-8"))
+                    except OSError:
+                        print(client.target+" disconnected")
+                        print(client.ID+" disconnecting from "+client.target)
+                        client.sck.close()
+                        return
+                    data = None
+                    while not data:
+                        try:
+                            data = client.sck.recv(1024)
+                        except Exception:
+                            pass
+                    if client.v:
+                        print(client.ID+" <- "+client.target+": "+str(data, "utf-8"))
+                    data = str(data, "utf-8").split("|")
+                    if data[1] == "ACK":
+                        ack = True
 
     def __init__(self, ID="CLIE"):
         self.buffer = [""]

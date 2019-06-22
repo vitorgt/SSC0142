@@ -40,6 +40,11 @@ class Sensor():
                     self.info[0] = float(data[3])
 
     def __init__(self, ID):
+        """
+        Parameters
+        ----------
+        """
+
         self.info = []
         HOST, v = client.inputs()
         if HOST != None:

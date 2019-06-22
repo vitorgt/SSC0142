@@ -34,7 +34,7 @@ def sensor(sck):
             print(sck.server.ID+" disconnecting from "+sck.ID)
             sck.conn.close()
             return
-        time.sleep(1)
+        time.sleep(0.5)
 
 
 def actuator(sck):
@@ -55,11 +55,42 @@ def actuator(sck):
                 status[actuators[sck.ID][0]], float(data[3]))
 
 
+def clie(sck):
+    if sck.server.v:
+        print(sck.ID+" logged in")
+    while True:
+        data = None
+        while not data:
+            try:
+                data = sck.conn.recv(1024)
+            except Exception:
+                pass
+        if sck.server.v:
+            print(sck.server.ID+" <- "+sck.ID+": "+str(data, "utf-8"))
+        data = str(data, "utf-8").split("|")
+        response = ""
+        for x in range(len(data)):
+            if data[x] == "PUT":
+                status[data[x+1]] = float(data[x+2])
+                if sck.server.v:
+                    print("Client",sck.addr,"mannually setting",data[x+1],"to",data[x+2])
+                response = "|ACK|PUT|"
+        if sck.server.v:
+            print(sck.server.ID+" <- "+sck.ID+": "+response)
+        try:
+            sck.conn.send(bytes(response, "utf-8"))
+        except OSError:
+            print(sck.ID+" disconnected")
+            print(sck.server.ID+" disconnecting from "+sck.ID)
+            sck.conn.close()
+            return
+
+
 def envi(serverThread):
     if serverThread.ID in actuators:
         actuator(serverThread)
     elif serverThread.ID == "CLIE":
-        pass
+        clie(serverThread)
     else:
         sensor(serverThread)
 
