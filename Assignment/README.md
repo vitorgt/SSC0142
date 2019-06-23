@@ -4,17 +4,27 @@ Our project was to develop a socket system to control greenhouses' sensors and a
 
 ## To execute
 
-### On Linux
+### First, on Linux
 
-On a terminal access the main directory (the one which contains the `Makefile`) and execute:
+Using a terminal, access the Assignment directory and execute this command to make the files executables:
 
 ```
-make run
+chmod +x *.py
 ```
 
-### On Windows
+### Now on Linux and Windows
 
-Open the main directory and double click each `.py` file whose names are 4 chars long.
+Basically execute every `.py` that has 4 letters on its name, the other py modules are classes.
+
+They will open terminals and begin connections with `127.0.0.1` automatically.
+
+### Executing in different computers
+
+Using a terminal, acess the Assignment directory and execute the file you want to run in each computer, clients (described below) will need the flag `-ip X.X.X.X` where `X.X.X.X` is the [server's IP address](https://whatismyip.com.br/). For instance:
+
+```
+./temp.py -ip 53.45.1.0
+```
 
 ## About Implementation
 
