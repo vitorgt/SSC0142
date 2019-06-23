@@ -1,6 +1,6 @@
 # Smart Greenhouse
 
-Our project was to develop a socket system to control greenhouses' sensors and actuators balancing its environment and being able to get information from and control it over the internet.
+Our project was to develop a socket system on `Python3` to control greenhouses' sensors and actuators balancing its environment and being able to get information from and control it over the internet.
 
 ## To execute
 
