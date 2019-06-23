@@ -107,41 +107,41 @@ def actuator(sck):
     """Check conditions to turn Actuators on and off."""
     if sck.server.v:
         print(sck.ID + " logged in")
-    with actuators[sck.ID] as act:
-        while True:
-            try:
-                # It can be turned on:
-                # If it's not on
-                if not act["on"]:
-                    # If it's manually set on
-                    if act["manualOn"]:
+    act = actuators[sck.ID]
+    while True:
+        try:
+            # It can be turned on:
+            # If it's not on
+            if not act["on"]:
+                # If it's manually set on
+                if act["manualOn"]:
+                    sendActuatorSwitch(sck, "ON")
+                # If there's data to compare to the limit
+                if len(act["sensorData"]) != 0:
+                    # If the data violates the conditional
+                    if act["startConditional"](
+                            act["sensorData"][-1],
+                            act["limit"]
+                    ):
                         sendActuatorSwitch(sck, "ON")
+            # It can be turned off:
+            # If it's on
+            else:
+                # If it isn't manually set on
+                if not act["manualOn"]:
                     # If there's data to compare to the limit
                     if len(act["sensorData"]) != 0:
-                        # If the data violates the conditional
-                        if act["startConditional"](
-                                act["sensorData"][-1],
-                                act["limit"]
+                        # If the data doesn't violates the conditional
+                        if act["endConditional"](
+                            act["sensorData"][-1],
+                            act["limit"]
                         ):
-                            sendActuatorSwitch(sck, "ON")
-                # It can be turned off:
-                # If it's on
-                else:
-                    # If it isn't manually set on
-                    if not act["manualOn"]:
-                        # If there's data to compare to the limit
-                        if len(act["sensorData"]) != 0:
-                            # If the data doesn't violates the conditional
-                            if act["endConditional"](
-                                act["sensorData"][-1],
-                                act["limit"]
-                            ):
-                                sendActuatorSwitch(sck, "OFF")
-            except OSError:  # If connection error:
-                print(sck.ID + " disconnected")
-                print(sck.server.ID + " disconnecting from " + sck.ID)
-                sck.conn.close()
-                return
+                            sendActuatorSwitch(sck, "OFF")
+        except OSError:  # If connection error:
+            print(sck.ID + " disconnected")
+            print(sck.server.ID + " disconnecting from " + sck.ID)
+            sck.conn.close()
+            return
 
 
 def clie(sck):
