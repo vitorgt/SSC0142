@@ -21,25 +21,27 @@ actuators = {
 
 
 def sensor(sck):
+    """Send status to Sensors."""
     if sck.server.v:
-        print(sck.ID+" logged in")
+        print(sck.ID + " logged in")
     while True:
-        string = "|PUT|"+sck.ID+"|"+str(status[sck.ID])+"|"
+        string = "|PUT|" + sck.ID + "|" + str(status[sck.ID]) + "|"
         if sck.server.v:
-            print(sck.server.ID+" -> "+sck.ID+": "+string)
+            print(sck.server.ID + " -> " + sck.ID + ": " + string)
         try:
             sck.conn.send(bytes(string, "utf-8"))
-        except OSError:
-            print(sck.ID+" disconnected")
-            print(sck.server.ID+" disconnecting from "+sck.ID)
+        except OSError:  # If connection error:
+            print(sck.ID + " disconnected")
+            print(sck.server.ID + " disconnecting from " + sck.ID)
             sck.conn.close()
             return
         time.sleep(0.5)
 
 
 def actuator(sck):
+    """Receive status' changes from Actuators."""
     if sck.server.v:
-        print(sck.ID+" logged in")
+        print(sck.ID + " logged in")
     while True:
         data = None
         while not data:
@@ -48,7 +50,7 @@ def actuator(sck):
             except Exception:
                 pass
         if sck.server.v:
-            print(sck.server.ID+" <- "+sck.ID+": "+str(data, "utf-8"))
+            print(sck.server.ID + " <- " + sck.ID + ": " + str(data, "utf-8"))
         data = str(data, "utf-8").split("|")
         if data[1] == "PUT" and data[2] == sck.ID:
             status[actuators[sck.ID][0]] = actuators[sck.ID][1](
@@ -56,8 +58,9 @@ def actuator(sck):
 
 
 def clie(sck):
+    """Receive status' changes from Client and reply."""
     if sck.server.v:
-        print(sck.ID+" logged in")
+        print(sck.ID + " logged in")
     while True:
         data = None
         while not data:
@@ -66,27 +69,29 @@ def clie(sck):
             except Exception:
                 pass
         if sck.server.v:
-            print(sck.server.ID+" <- "+sck.ID+": "+str(data, "utf-8"))
+            print(sck.server.ID + " <- " + sck.ID + ": " + str(data, "utf-8"))
         data = str(data, "utf-8").split("|")
         response = ""
         for x in range(len(data)):
             if data[x] == "PUT":
-                status[data[x+1]] = float(data[x+2])
+                status[data[x + 1]] = float(data[x + 2])
                 if sck.server.v:
-                    print("Client",sck.addr,"mannually setting",data[x+1],"to",data[x+2])
+                    print("Client", sck.addr, "manually setting",
+                          data[x + 1], "to", data[x + 2])
                 response = "|ACK|PUT|"
         if sck.server.v:
-            print(sck.server.ID+" <- "+sck.ID+": "+response)
+            print(sck.server.ID + " <- " + sck.ID + ": " + response)
         try:
             sck.conn.send(bytes(response, "utf-8"))
-        except OSError:
-            print(sck.ID+" disconnected")
-            print(sck.server.ID+" disconnecting from "+sck.ID)
+        except OSError:  # If connection error:
+            print(sck.ID + " disconnected")
+            print(sck.server.ID + " disconnecting from " + sck.ID)
             sck.conn.close()
             return
 
 
 def envi(serverThread):
+    """Categorize which function to call based on connection's ID."""
     if serverThread.ID in actuators:
         actuator(serverThread)
     elif serverThread.ID == "CLIE":
@@ -97,6 +102,7 @@ def envi(serverThread):
 
 @server.threaded
 def enviRand(status):
+    """Change status randomly."""
     while True:
         status["TEMP"] += random.random()*2-1  # [-1, 1]
         status["HUMI"] += random.random()*0.25-0.125  # [-0.125, 0.125]
@@ -104,7 +110,7 @@ def enviRand(status):
             status["HUMI"] = 1
         if status["HUMI"] < 0:
             status["HUMI"] = 0
-        status["CO2L"] += random.random()*500-250  # [-250, 250]
+        status["CO2L"] += random.random()*500-350  # [-350, 150]
         if status["CO2L"] < 0:
             status["CO2L"] = 0
         time.sleep(random.randint(0, 3))
@@ -112,4 +118,4 @@ def enviRand(status):
 
 if __name__ == "__main__":
     enviRand(status)
-    environment = server.Server(8888, "ENVI", envi)
+    server.Server(8888, "ENVI", envi)
