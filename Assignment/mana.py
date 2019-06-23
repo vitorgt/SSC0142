@@ -12,14 +12,14 @@ storage = {
 
 limits = {
     "TEMP": {
-        "MAX": 32.0,
-        "MIN": 20.0
+        "MAX": [32.0],
+        "MIN": [20.0]
     },
     "HUMI": {
-        "MIN": 0.6
+        "MIN": [0.6]
     },
     "CO2L": {
-        "MIN": 550.0
+        "MIN": [550.0]
     }
 }
 
@@ -121,7 +121,7 @@ def actuator(sck):
                     # If the data violates the conditional
                     if act["startConditional"](
                             act["sensorData"][-1],
-                            act["limit"]
+                            act["limit"][0]
                     ):
                         sendActuatorSwitch(sck, "ON")
             # It can be turned off:
@@ -134,7 +134,7 @@ def actuator(sck):
                         # If the data doesn't violates the conditional
                         if act["endConditional"](
                             act["sensorData"][-1],
-                            act["limit"]
+                            act["limit"][0]
                         ):
                             sendActuatorSwitch(sck, "OFF")
         except OSError:  # If connection error:
@@ -180,7 +180,7 @@ def clie(sck):
                           data[x + 1], data[x + 2])
                 response = "|ACK|PUT|"
             elif data[x] == "DEF":
-                limits[data[x + 1]][data[x + 2]] = float(data[x + 3])
+                limits[data[x + 1]][data[x + 2]][0] = float(data[x + 3])
                 if sck.server.v:
                     print("Client", sck.addr, "manually setting",
                           data[x + 2], data[x + 1], "to", data[x + 3])
